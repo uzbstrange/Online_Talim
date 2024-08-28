@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Online_Talim
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Online_Talim
+    username: postgres
+    password: b1t
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  token:
+    expiration:
+      mills: 3600000000
+    secret: key:s3cr3tK3yF0rJWT!@#123$%^&*()_+SecuredKey9876543210
