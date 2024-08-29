@@ -2,6 +2,7 @@ package online_ta_lim.controller;
 
 import online_ta_lim.custom_responses.ApiResponse;
 import online_ta_lim.domain.Chat;
+import online_ta_lim.dto.ChatCreationDto;
 import online_ta_lim.service.ChatService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,8 @@ public class ChatController {
     }
 
     @PostMapping
-    public ApiResponse<Chat> createChat(@RequestBody Chat chat) {
-        return chatService.createChat(chat);
+    public ApiResponse<Chat> createChat(@RequestBody ChatCreationDto chatDto) {
+        return chatService.createChat(chatDto);
     }
 
     @GetMapping("/{id}")

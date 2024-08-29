@@ -18,8 +18,8 @@ public class GroupController {
     }
 
     @PostMapping
-    public ApiResponse<Group> createGroup(@RequestBody Group group) {
-        return groupService.createGroup(group);
+    public ApiResponse<Group> createGroup(@RequestBody String groupName) {
+        return groupService.createGroup(groupName); // Only pass groupName
     }
 
     @GetMapping("/{id}")
@@ -33,8 +33,8 @@ public class GroupController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Group> updateGroup(@PathVariable Long id, @RequestBody Group group) {
-        return groupService.updateGroup(id, group);
+    public ApiResponse<Group> updateGroup(@PathVariable Long id, @RequestBody String groupName) {
+        return groupService.updateGroup(id, groupName);
     }
 
     @DeleteMapping("/{id}")

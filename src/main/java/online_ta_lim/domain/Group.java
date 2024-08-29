@@ -27,4 +27,10 @@ public class Group {
 
     @OneToMany(mappedBy = "group")
     private List<Lesson> lessons;
+
+    // Constructor to set teacher automatically
+    public Group(String groupName, UserEntity teacher) {
+        this.groupName = groupName;
+        this.teacher = teacher;
+    }
 }
