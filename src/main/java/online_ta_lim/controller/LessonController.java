@@ -17,6 +17,16 @@ public class LessonController {
         this.lessonService = lessonService;
     }
 
+    @PostMapping("/{id}/start-chat")
+    public ApiResponse<Lesson> startChat(@PathVariable Long id) {
+        return lessonService.startChat(id);
+    }
+
+    @PostMapping("/{id}/end-chat")
+    public ApiResponse<Lesson> endChat(@PathVariable Long id) {
+        return lessonService.endChat(id);
+    }
+
     @PostMapping
     public ApiResponse<Lesson> createLesson(@RequestBody Lesson lesson) {
         return lessonService.createLesson(lesson);

@@ -5,6 +5,7 @@ import online_ta_lim.domain.Lesson;
 import online_ta_lim.repository.LessonRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +51,31 @@ public class LessonService {
         if (lessonRepository.existsById(id)) {
             lessonRepository.deleteById(id);
             return new ApiResponse<>("Lesson deleted successfully", true);
+        } else {
+            return new ApiResponse<>("Lesson not found", false);
+        }
+    }
+
+    public ApiResponse<Lesson> startChat(Long lessonId) {
+        Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
+        if (optionalLesson.isPresent()) {
+            Lesson lesson = optionalLesson.get();
+            lesson.setChatActive(true);
+            lesson.setChatStartTime(LocalDateTime.now());
+            lessonRepository.save(lesson);
+            return new ApiResponse<>("Chat started successfully", true, lesson);
+        } else {
+            return new ApiResponse<>("Lesson not found", false);
+        }
+    }
+
+    public ApiResponse<Lesson> endChat(Long lessonId) {
+        Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
+        if (optionalLesson.isPresent()) {
+            Lesson lesson = optionalLesson.get();
+            lesson.setChatActive(false);
+            lessonRepository.save(lesson);
+            return new ApiResponse<>("Chat ended successfully", true, lesson);
         } else {
             return new ApiResponse<>("Lesson not found", false);
         }

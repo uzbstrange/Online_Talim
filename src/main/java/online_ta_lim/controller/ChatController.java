@@ -4,6 +4,8 @@ import online_ta_lim.custom_responses.ApiResponse;
 import online_ta_lim.domain.Chat;
 import online_ta_lim.dto.ChatCreationDto;
 import online_ta_lim.service.ChatService;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +38,11 @@ public class ChatController {
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteChat(@PathVariable Long id) {
         return chatService.deleteChat(id);
+    }
+
+    @MessageMapping("/sendMessage")
+    @SendTo("/topic/lessons/{lessonId}")
+    public ApiResponse<Chat> sendMessage(@RequestBody ChatCreationDto chatDto, @PathVariable Long lessonId) {
+        return chatService.sendMessageToLessonChat(lessonId, chatDto);
     }
 }

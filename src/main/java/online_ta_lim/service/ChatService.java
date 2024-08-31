@@ -2,10 +2,13 @@ package online_ta_lim.service;
 
 import online_ta_lim.custom_responses.ApiResponse;
 import online_ta_lim.domain.Chat;
+import online_ta_lim.domain.Lesson;
 import online_ta_lim.domain.UserEntity;
 import online_ta_lim.dto.ChatCreationDto;
 import online_ta_lim.repository.ChatRepository;
+import online_ta_lim.repository.LessonRepository;
 import online_ta_lim.repository.UserRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,11 +20,31 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final LessonRepository lessonRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatService(ChatRepository chatRepository, UserRepository userRepository, UserService userService) {
+    public ChatService(ChatRepository chatRepository, UserRepository userRepository, UserService userService, LessonRepository lessonRepository, SimpMessagingTemplate messagingTemplate) {
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.lessonRepository = lessonRepository;
+        this.messagingTemplate = messagingTemplate;
+    }
+
+    public ApiResponse<Chat> sendMessageToLessonChat(Long lessonId, ChatCreationDto chatDto) {
+        UserEntity currentUser = userService.getCurrentUser();
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new RuntimeException("Lesson not found"));
+
+        Chat chat = new Chat();
+        chat.setSender(currentUser);
+        chat.setMessage(chatDto.getMessage());
+        chat.setTimestamp(LocalDateTime.now());
+        chat.setLesson(lesson);
+
+        Chat savedChat = chatRepository.save(chat);
+        messagingTemplate.convertAndSend("/topic/lessons/" + lessonId, savedChat);
+        return new ApiResponse<>("Message sent successfully", true, savedChat);
     }
 
     public ApiResponse<Chat> createChat(ChatCreationDto chatDto) {

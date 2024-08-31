@@ -29,4 +29,8 @@ public class Chat {
 
     private String message;
     private LocalDateTime timestamp;
+
+    @ManyToOne
+    @JoinColumn(name = "lesson_name")
+    private Lesson lesson;
 }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,4 +25,8 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+
+    private boolean chatActive; // Indicates if the online chat is active
+
+    private LocalDateTime chatStartTime; // When the chat started
 }
