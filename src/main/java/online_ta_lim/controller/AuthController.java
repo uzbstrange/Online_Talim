@@ -26,20 +26,9 @@ public class AuthController {
         return ResponseEntity.status(resp.isSuccess()?200:400).body(resp);
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody UserLoginDto loginDto){
-//        ApiResponse resp = authService.login(loginDto);
-//        return ResponseEntity.ok(resp);
-//    }
-
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody UserLoginDto loginDto){
         ApiResponse resp = authService.login(loginDto);
-        if (resp.isSuccess()) {
-            return ResponseEntity.ok(resp);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resp);
-        }
+        return ResponseEntity.ok(resp);
     }
-
 }
