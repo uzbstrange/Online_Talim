@@ -15,15 +15,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     private final JwtProvider jwtProvider;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    private CustomUserDetailsService customUserDetailsService;
-
-    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, CustomUserDetailsService customUserDetailsService) {
         this.jwtProvider = jwtProvider;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -31,20 +36,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
 
-        if (jwt != null && jwtProvider.validateToken(jwt)) {
-            String username = jwtProvider.getUsernameFromToken(jwt);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        if (jwt != null) {
+            logger.info("Token found: {}", jwt);
+            if (jwtProvider.validateToken(jwt)) {
+                logger.info("Token is valid");
+                String username = jwtProvider.getUsernameFromToken(jwt);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            // Create an authentication token using the built-in UsernamePasswordAuthenticationToken
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // Set the authentication object in the security context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                logger.warn("Token is invalid");
+            }
+        } else {
+            logger.warn("No token found in request");
         }
 
         filterChain.doFilter(request, response);
@@ -53,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            return bearerToken.substring(7); // Extract the token part from "Bearer <token>"
         }
         return null;
     }

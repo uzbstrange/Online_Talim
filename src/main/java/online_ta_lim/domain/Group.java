@@ -21,21 +21,15 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String groupName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id",nullable = false)
+    @JoinColumn(name = "teacher_id", nullable = false)
     private UserEntity teacher;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lesson> lessons;
-
-    // Constructor to set teacher automatically
-    public Group(String groupName, UserEntity teacher) {
-        this.groupName = groupName;
-        this.teacher = teacher;
-    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -45,7 +39,10 @@ public class Group {
     )
     private Set<UserEntity> students = new HashSet<>();
 
-
+    public Group(String groupName, UserEntity teacher) {
+        this.groupName = groupName;
+        this.teacher = teacher;
+    }
 
     public void addStudent(UserEntity student) {
         students.add(student);
@@ -53,5 +50,18 @@ public class Group {
 
     public void removeStudent(UserEntity student) {
         students.remove(student);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return id != null && id.equals(group.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

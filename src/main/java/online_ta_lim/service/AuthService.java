@@ -5,6 +5,7 @@ import online_ta_lim.domain.UserEntity;
 import online_ta_lim.domain.UserType;
 import online_ta_lim.dto.UserLoginDto;
 import online_ta_lim.dto.UserRegistrationDto;
+import online_ta_lim.provider.JwtProvider;
 import online_ta_lim.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,19 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
     }
 
     public ApiResponse login(UserLoginDto dto) {
-        Optional<UserEntity> optionalUser = userRepository.findByUsernameAndPassword(dto.getEmail(), passwordEncoder.encode(dto.getPassword()));
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(dto.getUsername());
 
         if (optionalUser.isEmpty()) {
-            return new ApiResponse("No user registered with this email: " + dto.getEmail(), false);
+            return new ApiResponse("No user registered with this username: " + dto.getUsername(), false);
         }
 
         UserEntity user = optionalUser.get();
@@ -35,8 +38,11 @@ public class AuthService {
             return new ApiResponse("Invalid username or password", false);
         }
 
-        return new ApiResponse("Successfully logged in", true);
+        String token = jwtProvider.generateToken(user);
+
+        return new ApiResponse("Successfully logged in", true, token);
     }
+
 
     public ApiResponse<UserEntity> register(UserRegistrationDto dto) {
         if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
