@@ -17,4 +17,4 @@ jwt:
   token:
     expiration:
       mills: 3600000000
-    secret: key:s3cr3tK3yF0rJWT!@#123$%^&*()_+SecuredKey9876543210
+    secret: U29tZVNlY3VyZVNlY3JldEtleUZvclRva2VuLWFzZGZhc2RmYXNkZmtqY2xpZmxqeHdkYmxzdWZqa3dlcmgyZmdyZWtmZ2ZyZQ==
