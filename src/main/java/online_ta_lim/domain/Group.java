@@ -39,9 +39,8 @@ public class Group {
     )
     private Set<UserEntity> students = new HashSet<>();
 
-    public Group(String groupName, UserEntity teacher) {
+    public Group(String groupName) {
         this.groupName = groupName;
-        this.teacher = teacher;
     }
 
     public void addStudent(UserEntity student) {

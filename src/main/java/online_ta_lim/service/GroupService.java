@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
@@ -24,16 +26,33 @@ public class GroupService {
         this.userService = userService;
     }
 
-    @Transactional
-    public ApiResponse<Group> createGroup(String groupName) {
-        UserEntity currentUser = userService.getCurrentUser();
-        if (currentUser.getUserType() != UserType.TEACHER) {
-            return new ApiResponse<>("Only teachers can create groups", false);
+    public ApiResponse<Group> createGroup(String groupName, List<Long> studentIds) {
+
+        Group group = new Group(groupName);
+
+        if (studentIds != null && !studentIds.isEmpty()) {
+            Set<UserEntity> students = userRepository.findAllById(studentIds)
+                    .stream()
+                    .filter(user -> user.getUserType() == UserType.STUDENT)
+                    .collect(Collectors.toSet());
+
+            group.setStudents(students);
         }
-        Group group = new Group(groupName, currentUser);
+
         Group savedGroup = groupRepository.save(group);
         return new ApiResponse<>("Group created successfully", true, savedGroup);
     }
+
+//    @Transactional
+//    public ApiResponse<Group> createGroup(String groupName) {
+//        UserEntity currentUser = userService.getCurrentUser();
+//        if (currentUser.getUserType() != UserType.TEACHER) {
+//            return new ApiResponse<>("Only teachers can create groups", false);
+//        }
+//        Group group = new Group(groupName, currentUser);
+//        Group savedGroup = groupRepository.save(group);
+//        return new ApiResponse<>("Group created successfully", true, savedGroup);
+//    }
 
     public ApiResponse<Group> getGroupById(Long id) {
         Optional<Group> group = groupRepository.findById(id);

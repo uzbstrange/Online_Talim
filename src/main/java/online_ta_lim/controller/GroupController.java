@@ -1,5 +1,6 @@
 package online_ta_lim.controller;
 
+import online_ta_lim.dto.GroupCreationDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import online_ta_lim.custom_responses.ApiResponse;
@@ -18,10 +19,19 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    // Create a new group
+//    // Create a new group
+//    @PostMapping
+//    public ResponseEntity<ApiResponse<Group>> createGroup(@RequestBody String groupName) {
+//        ApiResponse<Group> response = groupService.createGroup(groupName);
+//        return ResponseEntity.ok(response);
+//    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<Group>> createGroup(@RequestBody String groupName) {
-        ApiResponse<Group> response = groupService.createGroup(groupName);
+    public ResponseEntity<ApiResponse<Group>> createGroup(@RequestBody GroupCreationDto groupDto) {
+        String groupName = groupDto.getGroupName();
+        List<Long> studentIds = groupDto.getStudentIds();
+
+        ApiResponse<Group> response = groupService.createGroup(groupName, studentIds);
         return ResponseEntity.ok(response);
     }
 
