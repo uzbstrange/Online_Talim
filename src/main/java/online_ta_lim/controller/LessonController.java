@@ -2,6 +2,7 @@ package online_ta_lim.controller;
 
 import online_ta_lim.custom_responses.ApiResponse;
 import online_ta_lim.domain.Lesson;
+import online_ta_lim.dto.LessonCreationDto;
 import online_ta_lim.service.LessonService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class LessonController {
     }
 
     @PostMapping
-    public ApiResponse<Lesson> createLesson(@RequestBody Lesson lesson) {
+    public ApiResponse<Lesson> createLesson(@RequestBody LessonCreationDto lesson) {
         return lessonService.createLesson(lesson);
     }
 

@@ -40,9 +40,16 @@ public class ChatController {
         return chatService.deleteChat(id);
     }
 
+//    @MessageMapping("/sendMessage")
+//    @SendTo("/topic/lessons/{lessonId}")
+//    public ApiResponse<Chat> sendMessage(@RequestBody ChatCreationDto chatDto, @PathVariable Long lessonId) {
+//        return chatService.sendMessageToLessonChat(lessonId, chatDto);
+//    }
+
     @MessageMapping("/sendMessage")
-    @SendTo("/topic/lessons/{lessonId}")
-    public ApiResponse<Chat> sendMessage(@RequestBody ChatCreationDto chatDto, @PathVariable Long lessonId) {
-        return chatService.sendMessageToLessonChat(lessonId, chatDto);
+    public void sendMessage(ChatCreationDto chatDto) {
+        Long lessonId = chatDto.getLessonId(); // Extract lessonId from DTO
+        chatService.sendMessageToLessonChat(lessonId, chatDto);
     }
+
 }

@@ -2,6 +2,7 @@ package online_ta_lim.service;
 
 import online_ta_lim.custom_responses.ApiResponse;
 import online_ta_lim.domain.Lesson;
+import online_ta_lim.dto.LessonCreationDto;
 import online_ta_lim.repository.LessonRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,16 @@ public class LessonService {
         this.lessonRepository = lessonRepository;
     }
 
-    public ApiResponse<Lesson> createLesson(Lesson lesson) {
+    public ApiResponse<Lesson> createLesson(LessonCreationDto dto) {
+        // Convert DTO to Lesson entity
+        Lesson lesson = new Lesson();
+        lesson.setTitle(dto.getTitle());
+        lesson.setContent(dto.getContent());
+        lesson.setGroup(dto.getGroupName());
+        lesson.setChatActive(false); // Initialize chat as inactive
+        lesson.setChatStartTime(null); // No chat start time initially
+
+        // Save the lesson to the database
         Lesson savedLesson = lessonRepository.save(lesson);
         return new ApiResponse<>("Lesson created successfully", true, savedLesson);
     }
